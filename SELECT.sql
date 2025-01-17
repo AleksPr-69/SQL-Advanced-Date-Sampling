@@ -42,7 +42,7 @@ SELECT
 FROM 
 	track
 WHERE 
-	name ILIKE '%my%' or name ILIKE '%мой%';
+	name ILIKE '% my %' or name ILIKE '% мой %';
 
 
 -----------------------------------------------------------------------------------------
