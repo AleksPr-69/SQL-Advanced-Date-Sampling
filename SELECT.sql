@@ -28,21 +28,31 @@ where
 	year BETWEEN 2018 AND 2020;
 
 
--- 4 Исполнители, чье имя состоит из одного слова.
-SELECT 
-	name	
-FROM 
-	artist 
-WHERE 
-	name NOT LIKE '% %';
-
--- 5 Название треков, которые содержат слова "мой" или "my"
+--- 5 Название треков, которые содержат слова "мой" или "my"
 SELECT 
 	name
 FROM 
 	track
 WHERE 
-	name ILIKE '% my %' or name ILIKE '% мой %';
+	name ILIKE 'my %' /*Слово в начале строки*/
+OR 
+	name ILIKE '% my' /*Слово в конце строки*/
+OR 
+	name ILIKE '% my.' /*Слово в конце строки стоит точка*/	
+OR 
+	name ILIKE '% my %' /*Слово в середине строки*/	
+OR 
+	name ILIKE 'my' /*Название трека из одного искомого слова*/		
+OR
+	name ILIKE 'мой %' /*Слово в начале строки*/
+OR 
+	name ILIKE '% мой' /*Слово в конце строки*/
+OR 
+	name ILIKE '% мой.' /*Слово в конце строки стоит точка*/	
+OR 
+	name ILIKE '% мой %' /*Слово в середине строки*/	
+OR 
+	name ILIKE 'мой'; /*Название трека из одного искомого слова*/	
 
 
 -----------------------------------------------------------------------------------------
@@ -65,18 +75,13 @@ FROM
 
 
 -- 2 Количество треков, вошедших в альбомы 2019-2020 годов.
-SELECT 
-	name,
-	(
-	SELECT 
-		COUNT(album_id)
-	FROM 
-		track t
-	WHERE 
-		t.album_id = album.id 
-	)
+	COUNT(t.name)
 FROM 
-	album;
+	track AS t
+JOIN 
+	album AS a ON a.id = t.album_id 
+WHERE 
+	a.year BETWEEN 2019 AND 2020;
 
 
 -- 3 Средняя продолжительность треков по каждому альбомую.
@@ -95,15 +100,23 @@ FROM
 
 
 -- 4 Все исполнители, которые выпустили альбомы в 2020 году.
-SELECT a.name,  al.year
+SELECT 
+	a.name
 FROM 
-	artist AS a  
-JOIN 
-	artist_album AS aa ON aa.album_id = a.id
-JOIN 
-	album AS al ON aa.album_id = al.id 
-WHERE 
-	al.year = 2020;
+	artist AS a 
+WHERE
+	a.name NOT IN(
+		SELECT 
+			a2.name
+		FROM
+			artist as a2
+		JOIN 
+			artist_album AS aa ON aa.artist_id = a2.id 
+		JOIN 
+			album AS al ON al.id = aa.album_id 
+		WHERE 
+			al.year =2020
+		);
 
 
 -- 5 Название сборников, в которых присутствует конкретный исполнитель (выберете его сами)
